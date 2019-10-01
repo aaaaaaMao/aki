@@ -45,25 +45,28 @@ export default {
       let lastIndex = 0;
       let firstIndex = 0;
 
-      let tempStr = [];
+      let strList = [];
       let tempDiff = [];
-      let diffDict = {};
 
       diff.forEach((item, index) => {
-        if (item[0] === 0) {
-            tempStr.push(item[1]);
-            tempDiff.push(item);
-        } else {
-          if (index - 1 >= 0 && diff[index - 1][0] === -1) {
-            // do nothing
-          } else {
-            tempStr.push(item[1]);
-            tempDiff.push(item);
+        if (!(item[0] === 1 && index - 1 >= 0 && diff[index - 1][0] === -1)) {
+
+          if (item[0] === 1 && index - 1 >= 0 && index - 2 >= 0
+              && diff[index - 1][0] === 0 && diff[index - 2][0] === -1
+              && diff[index - 1][1] === ' ' && diff[index - 2][1] === item[1]          
+          ) {
+            strList[strList.length - 1] = item[1];
+            strList[strList.length - 2] = ' ';
+            tempDiff[strList.length - 1] = [0, item[1]];
+            tempDiff[strList.length - 2] = [1, ' '];
+            item = [-1, ' '];
           }
+          strList.push(item[1]);
+          tempDiff.push(item);
         }
       });
 
-      let newStr = tempStr.join('')
+      let newStr = strList.join('');
 
       tempDiff.forEach((item) => {
         if (item[0] === 0) {
@@ -71,6 +74,9 @@ export default {
         } else {
           lastIndex = newStr.indexOf(item[1], lastIndex) + item[1].length;
         }
+        // if (item[0]) {
+        //   range.push([item[0], firstIndex, lastIndex]);
+        // }
         range.push([item[0], firstIndex, lastIndex]);
         firstIndex = lastIndex;
       });
